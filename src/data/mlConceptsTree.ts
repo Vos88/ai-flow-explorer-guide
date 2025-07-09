@@ -1,9 +1,12 @@
-
 export interface MLConcept {
   id: string;
   title: string;
   description: string;
   color: string;
+  technicalDescription?: string;
+  applications?: string[];
+  advantages?: string[];
+  limitations?: string[];
   codeExample?: string;
   externalLinks?: Array<{ title: string; url: string }>;
   children?: MLConcept[];
@@ -48,6 +51,28 @@ model.fit(X_train, y_train)`,
                   title: "Linear Regression",
                   description: "Models the relationship between variables using a linear equation.",
                   color: "#fed7aa", // orange-200
+                  technicalDescription: "Linear regression fits a linear relationship between independent variables (features) and a dependent variable (target) by minimizing the sum of squared residuals. It assumes a linear relationship and uses ordinary least squares to find the best-fitting line.",
+                  applications: [
+                    "House price prediction",
+                    "Sales forecasting", 
+                    "Stock price analysis",
+                    "Medical diagnosis scores",
+                    "Marketing budget optimization"
+                  ],
+                  advantages: [
+                    "Simple to understand and implement",
+                    "Fast training and prediction",
+                    "No hyperparameter tuning required",
+                    "Provides feature importance insights",
+                    "Works well with linear relationships"
+                  ],
+                  limitations: [
+                    "Assumes linear relationship between variables",
+                    "Sensitive to outliers",
+                    "Requires feature scaling for optimal performance",
+                    "Poor performance with non-linear patterns",
+                    "Vulnerable to overfitting with many features"
+                  ],
                   codeExample: `from sklearn.linear_model import LinearRegression
 import numpy as np
 
@@ -56,7 +81,21 @@ model = LinearRegression()
 model.fit(X, y)
 
 # Make predictions
-predictions = model.predict(X_new)`
+predictions = model.predict(X_new)
+
+# Get coefficients
+print(f"Intercept: {model.intercept_}")
+print(f"Coefficients: {model.coef_}")`,
+                  externalLinks: [
+                    {
+                      title: "Scikit-learn Linear Regression Documentation",
+                      url: "https://scikit-learn.org/stable/modules/linear_model.html#ordinary-least-squares"
+                    },
+                    {
+                      title: "Khan Academy: Introduction to Linear Regression",
+                      url: "https://www.khanacademy.org/math/statistics-probability/describing-relationships-quantitative-data/introduction-to-trend-lines/a/linear-regression-review"
+                    }
+                  ]
                 },
                 {
                   id: "polynomial",
@@ -123,14 +162,47 @@ predictions = model.predict(X_new)`
                   title: "K-Means",
                   description: "Partitions data into k clusters based on similarity.",
                   color: "#fce7f3", // pink-100
+                  technicalDescription: "K-Means clustering partitions data into k clusters by iteratively assigning points to the nearest centroid and updating centroids to minimize within-cluster sum of squares. The algorithm converges when centroids stop moving significantly.",
+                  applications: [
+                    "Customer segmentation",
+                    "Image compression",
+                    "Market research",
+                    "Gene sequencing",
+                    "Recommendation systems"
+                  ],
+                  advantages: [
+                    "Simple and fast algorithm",
+                    "Works well with spherical clusters",
+                    "Scales well to large datasets",
+                    "Guaranteed convergence",
+                    "Memory efficient"
+                  ],
+                  limitations: [
+                    "Need to specify number of clusters (k)",
+                    "Sensitive to initialization",
+                    "Assumes spherical clusters",
+                    "Sensitive to outliers",
+                    "Struggles with clusters of different sizes"
+                  ],
                   codeExample: `from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 # Create and fit model
-kmeans = KMeans(n_clusters=3)
+kmeans = KMeans(n_clusters=3, random_state=42)
 clusters = kmeans.fit_predict(X)
 
 # Get cluster centers
-centers = kmeans.cluster_centers_`
+centers = kmeans.cluster_centers_
+
+# Plot results
+plt.scatter(X[:, 0], X[:, 1], c=clusters)
+plt.scatter(centers[:, 0], centers[:, 1], marker='x', s=200, c='red')`,
+                  externalLinks: [
+                    {
+                      title: "Scikit-learn K-Means Documentation",
+                      url: "https://scikit-learn.org/stable/modules/clustering.html#k-means"
+                    }
+                  ]
                 },
                 {
                   id: "hierarchical",

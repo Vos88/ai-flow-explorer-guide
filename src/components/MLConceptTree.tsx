@@ -14,6 +14,9 @@ export const MLConceptTree: React.FC = () => {
     // If it's a leaf node (no children), show detailed view
     if (!concept.children || concept.children.length === 0) {
       setSelectedConcept(concept);
+      // Add the leaf concept to the navigation path for breadcrumb display
+      const newPath = [...navigationPath, concept];
+      setNavigationPath(newPath);
       return;
     }
 
@@ -25,6 +28,12 @@ export const MLConceptTree: React.FC = () => {
 
   const handleBackToTree = () => {
     setSelectedConcept(null);
+    // Remove the leaf concept from navigation path when going back
+    if (navigationPath.length > 1) {
+      const newPath = navigationPath.slice(0, -1);
+      setNavigationPath(newPath);
+      setCurrentStage(newPath[newPath.length - 1]);
+    }
   };
 
   const handleBreadcrumbNavigate = (index: number) => {
@@ -39,11 +48,11 @@ export const MLConceptTree: React.FC = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
-          Machine Learning & AI Concept Tree
+          Machine Learning & AI Concept Explorer
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          Explore the interconnected world of Artificial Intelligence and Machine Learning. 
-          Navigate through concepts stage by stage, diving deeper into each area of interest.
+          Navigate through the interconnected world of Artificial Intelligence and Machine Learning. 
+          Explore concepts stage by stage, diving deeper into each area of interest.
         </p>
       </div>
 
@@ -58,6 +67,7 @@ export const MLConceptTree: React.FC = () => {
         <div className="animate-fade-in">
           <ConceptCard 
             concept={selectedConcept}
+            breadcrumbPath={navigationPath}
             onBack={handleBackToTree}
           />
         </div>
@@ -71,7 +81,7 @@ export const MLConceptTree: React.FC = () => {
             >
               {currentStage.title}
             </h2>
-            {currentStage.id !== 'ai-root' && (
+            {currentStage.id !== 'ai' && (
               <p className="text-gray-700 text-lg max-w-2xl mx-auto">
                 {currentStage.description}
               </p>
@@ -79,10 +89,10 @@ export const MLConceptTree: React.FC = () => {
           </div>
 
           {/* Instructions */}
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8">
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8 rounded-r-lg">
             <p className="text-blue-800">
               <strong>Navigate:</strong> Click on any concept to explore its subcategories, 
-              or click on concepts without children to view detailed information.
+              or click on leaf concepts to view detailed information with examples and applications.
             </p>
           </div>
 
@@ -108,7 +118,7 @@ export const MLConceptTree: React.FC = () => {
       )}
 
       {/* Footer */}
-      <div className="text-center mt-8 text-gray-500 text-sm">
+      <div className="text-center mt-12 text-gray-500 text-sm">
         <p>Interactive ML/AI Concept Explorer • Navigate stage by stage • Discover knowledge paths</p>
       </div>
     </div>
