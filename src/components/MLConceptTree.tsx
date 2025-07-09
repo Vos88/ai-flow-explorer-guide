@@ -8,15 +8,19 @@ import { mlConceptsTree, MLConcept } from '@/data/mlConceptsTree';
 export const MLConceptTree: React.FC = () => {
   const [selectedConcept, setSelectedConcept] = useState<MLConcept | null>(null);
   const [navigationPath, setNavigationPath] = useState<MLConcept[]>([mlConceptsTree]);
+  const [currentStage, setCurrentStage] = useState<MLConcept>(mlConceptsTree);
 
-  const handleViewDetails = (concept: MLConcept) => {
-    setSelectedConcept(concept);
-    
-    // Build navigation path to this concept
-    const path = findPathToConcept(mlConceptsTree, concept.id);
-    if (path) {
-      setNavigationPath(path);
+  const handleNodeClick = (concept: MLConcept) => {
+    // If it's a leaf node (no children), show detailed view
+    if (!concept.children || concept.children.length === 0) {
+      setSelectedConcept(concept);
+      return;
     }
+
+    // If it has children, navigate to that stage
+    const newPath = [...navigationPath, concept];
+    setNavigationPath(newPath);
+    setCurrentStage(concept);
   };
 
   const handleBackToTree = () => {
@@ -24,26 +28,10 @@ export const MLConceptTree: React.FC = () => {
   };
 
   const handleBreadcrumbNavigate = (index: number) => {
-    setNavigationPath(navigationPath.slice(0, index + 1));
+    const newPath = navigationPath.slice(0, index + 1);
+    setNavigationPath(newPath);
+    setCurrentStage(newPath[newPath.length - 1]);
     setSelectedConcept(null);
-  };
-
-  // Helper function to find path to a concept
-  const findPathToConcept = (root: MLConcept, targetId: string, currentPath: MLConcept[] = []): MLConcept[] | null => {
-    const newPath = [...currentPath, root];
-    
-    if (root.id === targetId) {
-      return newPath;
-    }
-    
-    if (root.children) {
-      for (const child of root.children) {
-        const result = findPathToConcept(child, targetId, newPath);
-        if (result) return result;
-      }
-    }
-    
-    return null;
   };
 
   return (
@@ -55,7 +43,7 @@ export const MLConceptTree: React.FC = () => {
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
           Explore the interconnected world of Artificial Intelligence and Machine Learning. 
-          Click on any concept to expand and discover its subcategories, or view detailed information.
+          Navigate through concepts stage by stage, diving deeper into each area of interest.
         </p>
       </div>
 
@@ -66,7 +54,7 @@ export const MLConceptTree: React.FC = () => {
       />
 
       {selectedConcept ? (
-        /* Detailed View */
+        /* Detailed View for Leaf Nodes */
         <div className="animate-fade-in">
           <ConceptCard 
             concept={selectedConcept}
@@ -75,67 +63,53 @@ export const MLConceptTree: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* Legend */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-700 mb-3">Color Coding:</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#f97316' }}></div>
-                <span>Supervised Learning</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ec4899' }}></div>
-                <span>Unsupervised Learning</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#3b82f6' }}></div>
-                <span>Neural Networks</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#10b981' }}></div>
-                <span>Reinforcement Learning</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#059669' }}></div>
-                <span>Natural Language Processing</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#dc2626' }}></div>
-                <span>Computer Vision</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#6366f1' }}></div>
-                <span>Core AI Concepts</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#8b5cf6' }}></div>
-                <span>Machine Learning</span>
-              </div>
-            </div>
+          {/* Current Stage Title */}
+          <div className="text-center mb-8">
+            <h2 
+              className="text-3xl font-bold mb-3"
+              style={{ color: currentStage.color }}
+            >
+              {currentStage.title}
+            </h2>
+            {currentStage.id !== 'ai-root' && (
+              <p className="text-gray-700 text-lg max-w-2xl mx-auto">
+                {currentStage.description}
+              </p>
+            )}
           </div>
 
           {/* Instructions */}
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8">
             <p className="text-blue-800">
-              <strong>How to use:</strong> Click on any concept to expand its subcategories, or click "View Details" 
-              to see comprehensive information including code examples and external resources.
+              <strong>Navigate:</strong> Click on any concept to explore its subcategories, 
+              or click on concepts without children to view detailed information.
             </p>
           </div>
 
-          {/* Tree Visualization */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <ConceptNode 
-              concept={navigationPath[navigationPath.length - 1]} 
-              level={0} 
-              onViewDetails={handleViewDetails}
-            />
+          {/* Current Stage Nodes */}
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+              {(currentStage.children || []).map((concept) => (
+                <div
+                  key={concept.id}
+                  className="transform transition-all duration-400 ease-in-out hover:scale-105"
+                >
+                  <ConceptNode 
+                    concept={concept} 
+                    level={0} 
+                    onNodeClick={handleNodeClick}
+                    isStageMode={true}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}
 
       {/* Footer */}
       <div className="text-center mt-8 text-gray-500 text-sm">
-        <p>Interactive ML/AI Concept Tree • Click to explore • Expand your knowledge</p>
+        <p>Interactive ML/AI Concept Explorer • Navigate stage by stage • Discover knowledge paths</p>
       </div>
     </div>
   );
