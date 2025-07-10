@@ -11,13 +11,16 @@ export const MLConceptTree: React.FC = () => {
   const [currentStage, setCurrentStage] = useState<MLConcept>(mlConceptsTree);
 
   const handleNodeClick = (concept: MLConcept) => {
+    // If it's a leaf node (no children), show detailed view
     if (!concept.children || concept.children.length === 0) {
       setSelectedConcept(concept);
+      // Add the leaf concept to the navigation path for breadcrumb display
       const newPath = [...navigationPath, concept];
       setNavigationPath(newPath);
       return;
     }
 
+    // If it has children, navigate to that stage
     const newPath = [...navigationPath, concept];
     setNavigationPath(newPath);
     setCurrentStage(concept);
@@ -25,6 +28,7 @@ export const MLConceptTree: React.FC = () => {
 
   const handleBackToTree = () => {
     setSelectedConcept(null);
+    // Remove the leaf concept from navigation path when going back
     if (navigationPath.length > 1) {
       const newPath = navigationPath.slice(0, -1);
       setNavigationPath(newPath);
@@ -39,25 +43,16 @@ export const MLConceptTree: React.FC = () => {
     setSelectedConcept(null);
   };
 
-  // Get neon border class based on concept color
-  const getNeonBorderClass = (color: string) => {
-    if (color.includes('cyan') || color.includes('180')) return 'neon-border-cyan';
-    if (color.includes('blue') || color.includes('220')) return 'neon-border-blue';
-    if (color.includes('purple') || color.includes('270')) return 'neon-border-purple';
-    if (color.includes('pink') || color.includes('320')) return 'neon-border-pink';
-    if (color.includes('green') || color.includes('120')) return 'neon-border-green';
-    return 'neon-border-blue'; // default
-  };
-
   return (
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-6xl font-black mb-4 gradient-text-primary font-['Orbitron']">
-          AI EXPLORER
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          Machine Learning & AI Concept Explorer
         </h1>
-        <p className="text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed">
-          Navigate the frontier of artificial intelligence
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Navigate through the interconnected world of Artificial Intelligence and Machine Learning. 
+          Explore concepts stage by stage, diving deeper into each area of interest.
         </p>
       </div>
 
@@ -68,6 +63,7 @@ export const MLConceptTree: React.FC = () => {
       />
 
       {selectedConcept ? (
+        /* Detailed View for Leaf Nodes */
         <div className="animate-fade-in">
           <ConceptCard 
             concept={selectedConcept}
@@ -79,29 +75,30 @@ export const MLConceptTree: React.FC = () => {
         <>
           {/* Current Stage Title */}
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold mb-3 gradient-text-primary font-['Orbitron']">
+            <h2 
+              className="text-3xl font-bold mb-3"
+              style={{ color: currentStage.color }}
+            >
               {currentStage.title}
             </h2>
             {currentStage.id !== 'ai' && (
-              <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              <p className="text-gray-700 text-lg max-w-2xl mx-auto">
                 {currentStage.description}
               </p>
             )}
           </div>
 
           {/* Instructions */}
-          {currentStage.id === 'ai' && (
-            <div className={`futuristic-card ${getNeonBorderClass('#00ffff')} p-4 mb-8 rounded-xl`}>
-              <p className="text-cyan-200 text-center">
-                <strong>Navigate:</strong> Click on any concept to explore its subcategories, 
-                or click on leaf concepts to view detailed information with examples and applications.
-              </p>
-            </div>
-          )}
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8 rounded-r-lg">
+            <p className="text-blue-800">
+              <strong>Navigate:</strong> Click on any concept to explore its subcategories, 
+              or click on leaf concepts to view detailed information with examples and applications.
+            </p>
+          </div>
 
           {/* Current Stage Nodes */}
-          <div className="animate-fade-in">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {(currentStage.children || []).map((concept) => (
                 <div
                   key={concept.id}

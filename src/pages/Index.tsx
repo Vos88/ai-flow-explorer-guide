@@ -4,7 +4,7 @@ import { MLConceptTree } from '@/components/MLConceptTree';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[hsl(222,84%,5%)] via-[hsl(260,50%,8%)] to-[hsl(280,40%,10%)]">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <MLConceptTree />
     </div>
   );
